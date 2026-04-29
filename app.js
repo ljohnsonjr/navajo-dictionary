@@ -7,7 +7,7 @@ var SUPABASE_KEY = "sb_publishable_WvOlikgv9CHS7u_qeemflQ_3rAOOuaR";
   "use strict";
 
   var PAGE_SIZE = 50;
-  var LETTERS = "A B C D E F G H I J K L Ł M N O P Q R S T U V W X Y Z ʼ".split(" ");
+  var LETTERS = "A B C D E F G H I J K L Ł M N O P Q R S T U V W X Y Z".split(" ");
   var FAV_KEY = "dinebizaad_favorites";
   var RECENT_KEY = "dinebizaad_recent";
 
@@ -285,22 +285,30 @@ var SUPABASE_KEY = "sb_publishable_WvOlikgv9CHS7u_qeemflQ_3rAOOuaR";
     $alphaStrip.appendChild(btn);
   });
 
+  function stripLeadingGlottal(word) {
+    var s = word;
+    while (s.length > 0 && (s[0] === "’" || s[0] === "ʼ" || s[0] === "’" || s[0] === "’")) {
+      s = s.substring(1);
+    }
+    return s.length > 0 ? s : word;
+  }
+
   function normalizeChar(ch) {
     var c = ch.toLowerCase();
     if (c === "ł") return "ł";
     return c.normalize("NFKD").replace(/[̀-ͯ]/g, "");
   }
 
+  function getLetterForWord(word) {
+    var stripped = stripLeadingGlottal(word);
+    return normalizeChar(stripped.charAt(0));
+  }
+
   function browseLetter(letter) {
     var lLower = letter.toLowerCase();
     var results = [];
     for (var i = 0; i < D.length; i++) {
-      var firstChar = D[i].n.charAt(0);
-      var norm = normalizeChar(firstChar);
-      var match = (letter === "ʼ")
-        ? (firstChar === "'" || firstChar === "ʼ" || firstChar === "‘" || firstChar === "’")
-        : norm === lLower;
-      if (match) results.push(i);
+      if (getLetterForWord(D[i].n) === lLower) results.push(i);
     }
     currentResults = results;
     shownCount = 0;
@@ -318,15 +326,9 @@ var SUPABASE_KEY = "sb_publishable_WvOlikgv9CHS7u_qeemflQ_3rAOOuaR";
     var counts = {};
     LETTERS.forEach(function(l) { counts[l] = 0; });
     for (var i = 0; i < D.length; i++) {
-      var firstChar = D[i].n.charAt(0);
-      var norm = normalizeChar(firstChar);
+      var wordLetter = getLetterForWord(D[i].n);
       for (var j = 0; j < LETTERS.length; j++) {
-        var letter = LETTERS[j];
-        var lLower = letter.toLowerCase();
-        var match = (letter === "ʼ")
-          ? (firstChar === "'" || firstChar === "ʼ" || firstChar === "‘" || firstChar === "’")
-          : norm === lLower;
-        if (match) { counts[letter]++; break; }
+        if (LETTERS[j].toLowerCase() === wordLetter) { counts[LETTERS[j]]++; break; }
       }
     }
 
@@ -347,12 +349,7 @@ var SUPABASE_KEY = "sb_publishable_WvOlikgv9CHS7u_qeemflQ_3rAOOuaR";
     var lLower = letter.toLowerCase();
     browseResults = [];
     for (var i = 0; i < D.length; i++) {
-      var firstChar = D[i].n.charAt(0);
-      var norm = normalizeChar(firstChar);
-      var match = (letter === "ʼ")
-        ? (firstChar === "'" || firstChar === "ʼ" || firstChar === "‘" || firstChar === "’")
-        : norm === lLower;
-      if (match) browseResults.push(i);
+      if (getLetterForWord(D[i].n) === lLower) browseResults.push(i);
     }
     browseShown = 0;
     $browseList.innerHTML = "";
