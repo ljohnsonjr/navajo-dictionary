@@ -301,6 +301,7 @@ var SUPABASE_KEY = "sb_publishable_WvOlikgv9CHS7u_qeemflQ_3rAOOuaR";
 
   function getLetterForWord(word) {
     var stripped = stripLeadingGlottal(word);
+    while (stripped.length > 0 && stripped[0] === "-") stripped = stripped.substring(1);
     return normalizeChar(stripped.charAt(0));
   }
 
