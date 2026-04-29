@@ -423,6 +423,7 @@ a { color: var(--turquoise-dark); text-decoration: none; }
   border-color: var(--turquoise);
 }
 
+
 /* ===== FEATURED CARD ===== */
 .featured-card {
   display: block;

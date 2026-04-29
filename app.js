@@ -287,7 +287,7 @@ var SUPABASE_KEY = "sb_publishable_WvOlikgv9CHS7u_qeemflQ_3rAOOuaR";
 
   function stripLeadingGlottal(word) {
     var s = word;
-    while (s.length > 0 && (s[0] === "’" || s[0] === "’" || s[0] === "ʼ" || s[0] === "’" || s[0] === "’")) {
+    while (s.length > 0 && (s[0] === "'" || s[0] === "‘" || s[0] === "’" || s[0] === "ʼ")) {
       s = s.substring(1);
     }
     return s.length > 0 ? s : word;
@@ -317,8 +317,15 @@ var SUPABASE_KEY = "sb_publishable_WvOlikgv9CHS7u_qeemflQ_3rAOOuaR";
     $featuredCard.style.display = "none";
     $infoCards.style.display = "none";
     $recentSearches.style.display = "none";
-    renderResults("");
-    $resultsCount.textContent = results.length + ' words starting with "' + letter + '"';
+    if (results.length === 0) {
+      $resultsList.innerHTML = '<li class="empty-msg">No Navajo words start with the letter "' + letter + '"</li>';
+      $resultsArea.hidden = false;
+      $loadMore.hidden = true;
+      $resultsCount.textContent = "";
+    } else {
+      renderResults("");
+      $resultsCount.textContent = results.length + ' words starting with "' + letter + '"';
+    }
   }
 
   // ===== BROWSE SECTION =====
@@ -353,6 +360,13 @@ var SUPABASE_KEY = "sb_publishable_WvOlikgv9CHS7u_qeemflQ_3rAOOuaR";
     }
     browseShown = 0;
     $browseList.innerHTML = "";
+    if (browseResults.length === 0) {
+      $browseHeading.textContent = letter;
+      $browseList.innerHTML = '<li class="empty-msg">No Navajo words start with the letter "' + letter + '"</li>';
+      $browseResults.hidden = false;
+      $browseMore.hidden = true;
+      return;
+    }
     $browseHeading.textContent = letter + " — " + browseResults.length + " entries";
     var toShow = browseResults.slice(0, PAGE_SIZE);
     browseShown = toShow.length;
