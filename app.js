@@ -287,7 +287,7 @@ var SUPABASE_KEY = "sb_publishable_WvOlikgv9CHS7u_qeemflQ_3rAOOuaR";
 
   function stripLeadingGlottal(word) {
     var s = word;
-    while (s.length > 0 && (s[0] === "’" || s[0] === "ʼ" || s[0] === "’" || s[0] === "’")) {
+    while (s.length > 0 && (s[0] === "’" || s[0] === "’" || s[0] === "ʼ" || s[0] === "’" || s[0] === "’")) {
       s = s.substring(1);
     }
     return s.length > 0 ? s : word;
