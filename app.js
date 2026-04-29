@@ -546,6 +546,35 @@ var SUPABASE_KEY = "sb_publishable_WvOlikgv9CHS7u_qeemflQ_3rAOOuaR";
   // ===== INIT =====
   renderRecent();
 
+  function loadFeaturedEarly() {
+    var today = new Date();
+    var seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+    return fetch(
+      SUPABASE_URL + "/rest/v1/words?select=navajo,english&order=navajo.asc",
+      { headers: { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + SUPABASE_KEY, "Range": "0-0", "Prefer": "count=exact" } }
+    ).then(function(res) {
+      var range = res.headers.get("Content-Range");
+      var total = range ? parseInt(range.split("/")[1]) : 0;
+      if (!total) return;
+      var idx = seed % total;
+      return fetch(
+        SUPABASE_URL + "/rest/v1/words?select=navajo,english&order=navajo.asc&offset=" + idx + "&limit=1",
+        { headers: { "apikey": SUPABASE_KEY, "Authorization": "Bearer " + SUPABASE_KEY } }
+      ).then(function(r) { return r.json(); }).then(function(rows) {
+        if (rows.length > 0) {
+          var display = rearrangeNavajo(rows[0].navajo);
+          $featuredNav.textContent = display;
+          $featuredEng.textContent = rows[0].english;
+          $featuredCard.dataset.word = display;
+          updateFeaturedFavBtn();
+          $featuredFav.onclick = function() { toggleFavorite(display); };
+        }
+      });
+    }).catch(function() {});
+  }
+
+  loadFeaturedEarly();
+
   loadDictionary().then(function() {
     pickFeatured();
     buildBrowseGrid();
