@@ -62,10 +62,11 @@ var SUPABASE_KEY = "sb_publishable_WvOlikgv9CHS7u_qeemflQ_3rAOOuaR";
           return fetchBatch(from + batchSize);
         }
         D = allRows.map(function(row) {
+          var displayNavajo = rearrangeNavajo(row.navajo);
           return {
-            n: row.navajo,
+            n: displayNavajo,
             e: row.english,
-            sn: normalize(row.navajo),
+            sn: normalize(displayNavajo),
             se: normalize(row.english)
           };
         });
@@ -109,6 +110,66 @@ var SUPABASE_KEY = "sb_publishable_WvOlikgv9CHS7u_qeemflQ_3rAOOuaR";
   }
 
   // ===== SEARCH =====
+  function rearrangeNavajo(text) {
+    if (text.indexOf('(') !== -1) return text;
+    if (text.indexOf(',') === -1) return text;
+
+    var commaCount = (text.match(/,/g) || []).length;
+
+    if (commaCount > 1) {
+      var parts = text.split(',').map(function(s) { return s.trim(); });
+      var main = parts[0];
+      var middle = parts.slice(1, -1).join(' ');
+      var last = parts[parts.length - 1];
+      var lastWords = last.split(/\s+/);
+      var isGlottal = main.charAt(0) === "'" || main.charAt(0) === "‘" || main.charAt(0) === "’" || main.charAt(0) === "ʼ";
+      var result;
+      if (isGlottal && lastWords.length > 0) {
+        var lw = lastWords.pop();
+        result = lastWords.length > 0 ? lastWords.join(' ') + ' ' + lw + main : lw + main;
+      } else {
+        result = last + ' ' + main;
+      }
+      if (middle) result += ' ' + middle;
+      return result;
+    }
+
+    var parts = text.split(',');
+    var before = parts[0].trim();
+    var after = parts[1].trim();
+    var afterWords = after.split(/\s+/);
+
+    if (afterWords.length >= 4) return text;
+
+    var beforeWords = before.split(/\s+/);
+    var hasDa = false;
+
+    if (beforeWords.length > 1 && beforeWords[beforeWords.length - 1] === 'da') {
+      hasDa = true;
+      beforeWords.pop();
+    }
+    if (afterWords.length > 1 && afterWords[afterWords.length - 1] === 'da') {
+      hasDa = true;
+      afterWords.pop();
+    }
+
+    var mainBefore = beforeWords.join(‘ ‘);
+    var isGlottal = mainBefore.charAt(0) === "’" || mainBefore.charAt(0) === "’" || mainBefore.charAt(0) === "’" || mainBefore.charAt(0) === "ʼ";
+    var isDooNegation = hasDa && afterWords.length === 1 && afterWords[0] === ‘doo’;
+
+    var result;
+    if (isGlottal && !isDooNegation && afterWords.length > 0) {
+      var lastAfter = afterWords.pop();
+      var combined = lastAfter + mainBefore;
+      result = afterWords.length > 0 ? afterWords.join(‘ ‘) + ‘ ‘ + combined : combined;
+    } else {
+      result = afterWords.length > 0 ? afterWords.join(‘ ‘) + ‘ ‘ + mainBefore : mainBefore;
+    }
+
+    if (hasDa) result += ' da';
+    return result;
+  }
+
   function normalize(str) {
     return str.toLowerCase()
       .replace(/ł/g, "l").replace(/Ł/g, "l")
