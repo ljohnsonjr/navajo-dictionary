@@ -153,20 +153,20 @@ var SUPABASE_KEY = "sb_publishable_WvOlikgv9CHS7u_qeemflQ_3rAOOuaR";
       afterWords.pop();
     }
 
-    var mainBefore = beforeWords.join(‘ ‘);
-    var isGlottal = mainBefore.charAt(0) === "’" || mainBefore.charAt(0) === "’" || mainBefore.charAt(0) === "’" || mainBefore.charAt(0) === "ʼ";
-    var isDooNegation = hasDa && afterWords.length === 1 && afterWords[0] === ‘doo’;
+    var mainBefore = beforeWords.join(' ');
+    var isGlottal = mainBefore.charAt(0) === "’" || mainBefore.charAt(0) === "‘" || mainBefore.charAt(0) === "’" || mainBefore.charAt(0) === "ʼ";
+    var isDooNegation = hasDa && afterWords.length === 1 && afterWords[0] === "doo";
 
     var result;
     if (isGlottal && !isDooNegation && afterWords.length > 0) {
       var lastAfter = afterWords.pop();
       var combined = lastAfter + mainBefore;
-      result = afterWords.length > 0 ? afterWords.join(‘ ‘) + ‘ ‘ + combined : combined;
+      result = afterWords.length > 0 ? afterWords.join(" ") + " " + combined : combined;
     } else {
-      result = afterWords.length > 0 ? afterWords.join(‘ ‘) + ‘ ‘ + mainBefore : mainBefore;
+      result = afterWords.length > 0 ? afterWords.join(" ") + " " + mainBefore : mainBefore;
     }
 
-    if (hasDa) result += ' da';
+    if (hasDa) result += " da";
     return result;
   }
 
