@@ -1,8 +1,3 @@
-// ===== SUPABASE CONFIG =====
-var SUPABASE_URL = "https://uktgfkilctwgmkdhoutl.supabase.co";
-var SUPABASE_KEY = "sb_publishable_WvOlikgv9CHS7u_qeemflQ_3rAOOuaR";
-
-// ===== APP =====
 ;(function() {
   "use strict";
 
@@ -542,6 +537,10 @@ var SUPABASE_KEY = "sb_publishable_WvOlikgv9CHS7u_qeemflQ_3rAOOuaR";
       $recentList.appendChild(li);
     });
   }
+
+  // ===== SUPABASE CONFIG =====
+  var SUPABASE_URL = "https://uktgfkilctwgmkdhoutl.supabase.co";
+  var SUPABASE_KEY = "sb_publishable_WvOlikgv9CHS7u_qeemflQ_3rAOOuaR";
 
   // ===== INIT =====
   renderRecent();
